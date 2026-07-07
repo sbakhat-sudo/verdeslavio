@@ -1189,8 +1189,14 @@ function apriLogin(){
   overlay.classList.add('aperto'); passInput.value=''; setTimeout(function(){ passInput.focus(); },100);
 }
 document.getElementById('apri-login').addEventListener('click', apriLogin);
-// QR manager: se l'indirizzo contiene #manager, apri subito il login
-if(window.location.hash === '#manager'){ setTimeout(apriLogin, 600); }
+// QR manager: se l'indirizzo contiene #manager o ?manager, apri subito il login
+// (alcuni lettori QR/browser perdono il frammento #, quindi controlliamo anche la query string)
+function isLinkManager(){
+  var hash = (window.location.hash || '').toLowerCase();
+  var params = new URLSearchParams(window.location.search);
+  return hash.indexOf('manager') !== -1 || params.has('manager');
+}
+if(isLinkManager()){ setTimeout(apriLogin, 600); }
 document.getElementById('login-annulla').addEventListener('click', function(){ overlay.classList.remove('aperto'); });
 overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.classList.remove('aperto'); });
 function tentaLogin(){
