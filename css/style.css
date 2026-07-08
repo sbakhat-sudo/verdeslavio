@@ -174,6 +174,29 @@ h2{font-family:'Fraunces',serif;font-size:clamp(2.2rem,5.5vw,3.6rem);color:var(-
   .filtro{padding:8px 16px;font-size:.72rem}
 }
 
+/* ---------------- RECENSIONI ---------------- */
+#recensioni{background:var(--crema)}
+.recensioni-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;
+  max-width:1100px;margin:0 auto}
+.recensione-card{background:var(--avorio);border-radius:20px;padding:36px 32px;
+  border:1px solid rgba(176,141,79,.28);box-shadow:0 20px 50px -30px rgba(62,44,31,.4);
+  transition:transform .3s,box-shadow .3s}
+.recensione-card:hover{transform:translateY(-6px);box-shadow:0 30px 60px -30px rgba(62,44,31,.55)}
+.recensione-stelle{color:var(--ottone);letter-spacing:.12em;font-size:1.1rem;margin-bottom:16px}
+.recensione-testo{font-family:'Fraunces',serif;font-style:italic;color:var(--testo);
+  line-height:1.55;font-size:1.02rem;margin-bottom:20px}
+.recensione-nome{font-size:.8rem;color:var(--noce-medio);letter-spacing:.1em;text-transform:uppercase}
+.recensioni-cta{text-align:center;margin-top:44px}
+.btn-recensioni{display:inline-block;background:none;color:var(--noce);text-decoration:none;
+  border:1px solid rgba(107,74,47,.4);padding:13px 30px;border-radius:99px;font-size:.8rem;
+  letter-spacing:.14em;text-transform:uppercase;transition:all .3s}
+.btn-recensioni:hover,.btn-recensioni:focus-visible{border-color:var(--noce);
+  box-shadow:0 0 0 4px rgba(47,227,155,.25)}
+@media(max-width:640px){
+  .recensione-card{padding:28px 24px}
+  .recensioni-grid{gap:18px}
+}
+
 /* ---------------- CONTATTI ---------------- */
 #contatti{background:var(--crema)}
 .mappa-card{max-width:1080px;margin:0 auto;border-radius:24px;overflow:hidden;
