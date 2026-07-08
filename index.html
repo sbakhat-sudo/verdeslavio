@@ -154,8 +154,14 @@
       <div class="piantina-legenda">
         <span class="pl-libero"><i></i>libero</span>
         <span class="pl-occ"><i></i>occupato</span>
+        <span class="pl-prenotato"><i></i>prenotato</span>
         <span class="pl-tuo"><i></i>il tuo tavolo</span>
       </div>
+    </div>
+    <div class="campo gestione-tavoli" id="gestione-tavoli">
+      <label>tavoli di oggi <span style="color:var(--noce-medio);text-transform:none;letter-spacing:0">— area manager</span></label>
+      <button type="button" class="gt-notifiche" id="gt-notifiche">🔔 Attiva notifiche tavoli</button>
+      <div class="gt-lista" id="gt-lista"></div>
     </div>
     <div class="campo">
       <label for="p-note">note (facoltativo)</label>
@@ -163,6 +169,7 @@
     </div>
     <button class="btn-prenota" id="p-invia">Invia la richiesta su WhatsApp</button>
     <div class="conferma" id="p-conferma">Si apre WhatsApp con il messaggio già pronto — tocca solo Invia! 🌿</div>
+    <div id="toast-tavoli" class="toast-tavoli" aria-live="polite"></div>
     <p class="prenota-nota">Preferisci parlare con noi? Chiama il <b>+39 010 868 4171</b></p>
   </div>
 </section>

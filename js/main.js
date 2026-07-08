@@ -209,11 +209,10 @@ if(pInvia){
     aggiornaOccupati();
   });
 
-  // ---- disponibilità reale dei tavoli, condivisa tra i clienti ----
+  // ---- disponibilità dei tavoli, salvata in LocalStorage sul dispositivo ----
   // il locale ha 14 tavoli: 9 da 2 persone, 2 da 3 persone, 3 da 6 persone
   var CAPACITA = { t2: 9, t3: 2, t6: 3 };
   var NOME_TAVOLO = { t2: 'tavolo da 2', t3: 'tavolo da 3', t6: 'tavolo da 6' };
-  var storageOK = (typeof window.storage !== 'undefined');
 
   function catenaTavoli(p){
     // che tavolo serve per p persone (con ripiego su tavoli più grandi)
@@ -229,21 +228,24 @@ if(pInvia){
     }
     return null;
   }
-  function chiaveGiorno(d){ return 'prenotazioni:' + String(d).replace(/\//g,'-'); }
-  async function leggiGiorno(d){
-    if(!storageOK) return {};
+  function chiaveGiorno(d){ return 'vs_prenotazioni:' + String(d).replace(/\//g,'-'); }
+  function leggiGiorno(d){
     try{
-      var r = await window.storage.get(chiaveGiorno(d), true);
-      var v = r && r.value ? JSON.parse(r.value) : {};
+      var v = JSON.parse(localStorage.getItem(chiaveGiorno(d)) || '{}');
       return (v && !Array.isArray(v)) ? v : {};
     }catch(err){ return {}; }
   }
-  async function aggiornaOccupati(){
-    var giorno = await leggiGiorno(selData);
-    if(typeof aggiornaPiantina === 'function' && document.getElementById('tav-T1')) aggiornaPiantina(giorno);
+  function salvaGiorno(d, giorno){
+    try{ localStorage.setItem(chiaveGiorno(d), JSON.stringify(giorno)); }
+    catch(err){ console.error('localStorage:', err); }
+  }
+  function aggiornaOccupati(){
+    var giorno = leggiGiorno(selData);
+    var oraPassata = selData === oggiStr() ? Date.now() : null;
     contO.querySelectorAll('.pillola').forEach(function(p){
       var slot = giorno[p.dataset.v] || {};
-      var isOcc = slot.chiuso === true || tavoloDisponibile(slot, selPers) === null;
+      var passato = oraPassata !== null && parseDataOra(selData, p.dataset.v) <= oraPassata;
+      var isOcc = passato || slot.chiuso === true || tavoloDisponibile(slot, selPers) === null;
       p.classList.toggle('occupata', isOcc);
       if(isOcc && p.classList.contains('sel')){
         p.classList.remove('sel');
@@ -252,31 +254,157 @@ if(pInvia){
       }
     });
   }
-  async function prenotaTavolo(d, ora, p){
+  function prenotaTavolo(d, ora, p){
     // ritorna il tipo di tavolo assegnato, oppure null se pieno
-    var giorno = await leggiGiorno(d);
+    var giorno = leggiGiorno(d);
     var slot = giorno[ora] || {};
     if(slot.chiuso === true) return null;
     var t = tavoloDisponibile(slot, p);
     if(!t) return null;
     slot[t] = (slot[t]||0) + 1;
     giorno[ora] = slot;
-    if(storageOK){
-      try{ await window.storage.set(chiaveGiorno(d), JSON.stringify(giorno), true); }
-      catch(err){ console.error('storage:', err); }
-    }
+    salvaGiorno(d, giorno);
     return t;
   }
-  async function salvaOccupato(d, ora, occupato){
+  function salvaOccupato(d, ora, occupato){
     // usato dal manager: blocca/sblocca completamente un orario
-    if(!storageOK) return;
-    try{
-      var giorno = await leggiGiorno(d);
-      var slot = giorno[ora] || {};
-      slot.chiuso = occupato;
-      giorno[ora] = slot;
-      await window.storage.set(chiaveGiorno(d), JSON.stringify(giorno), true);
-    }catch(err){ console.error('storage:', err); }
+    var giorno = leggiGiorno(d);
+    var slot = giorno[ora] || {};
+    slot.chiuso = occupato;
+    giorno[ora] = slot;
+    salvaGiorno(d, giorno);
+  }
+
+  // ---- stato dei tavoli in tempo reale (solo per oggi) ----
+  // ogni tavolo può avere al massimo una prenotazione attiva: appena viene
+  // prenotato per un orario passa a "prenotato", all'orario stesso diventa
+  // "occupato", e dopo 2 ore torna "libero" da solo (o subito se il
+  // proprietario clicca "Libera tavolo").
+  var LS_TAVOLI_OGGI = 'vs_tavoli_oggi';
+  var DUE_ORE_MS = 2 * 60 * 60 * 1000;
+  var mioTavoloId = null;
+  var statoPrecedente = null;
+
+  function oggiStr(){
+    var d = new Date();
+    return ('0'+d.getDate()).slice(-2) + '/' + ('0'+(d.getMonth()+1)).slice(-2) + '/' + d.getFullYear();
+  }
+  function parseDataOra(dataStr, oraStr){
+    var pd = dataStr.split('/'), po = oraStr.split(':');
+    return new Date(+pd[2], +pd[1]-1, +pd[0], +po[0], +po[1], 0, 0).getTime();
+  }
+  function statoLiveTavolo(rec, now){
+    if(!rec || !rec.inizio) return 'libero';
+    if(now < rec.inizio) return 'prenotato';
+    if(now < rec.inizio + DUE_ORE_MS) return 'occupato';
+    return 'libero';
+  }
+  function leggiTavoliOggi(){
+    var raw = null;
+    try{ raw = JSON.parse(localStorage.getItem(LS_TAVOLI_OGGI) || 'null'); }catch(err){ raw = null; }
+    var oggi = oggiStr();
+    if(!raw || raw.giorno !== oggi || !raw.tavoli){
+      raw = { giorno: oggi, tavoli: {} };
+      TAVOLI.forEach(function(t){ raw.tavoli[t.id] = { ora: null, cliente: null, inizio: null }; });
+    }
+    var now = Date.now(), cambiato = false;
+    Object.keys(raw.tavoli).forEach(function(id){
+      var rec = raw.tavoli[id];
+      if(rec.inizio && now >= rec.inizio + DUE_ORE_MS){
+        raw.tavoli[id] = { ora: null, cliente: null, inizio: null };
+        cambiato = true;
+      }
+    });
+    if(cambiato) salvaTavoliOggi(raw);
+    return raw;
+  }
+  function salvaTavoliOggi(raw){
+    try{ localStorage.setItem(LS_TAVOLI_OGGI, JSON.stringify(raw)); }
+    catch(err){ console.error('localStorage:', err); }
+  }
+  function assegnaTavoloOggi(ora, persone, cliente){
+    var raw = leggiTavoliOggi();
+    var catena = catenaTavoli(persone);
+    var now = Date.now();
+    for(var i=0;i<catena.length;i++){
+      var tipo = catena[i];
+      for(var j=0;j<TAVOLI.length;j++){
+        var t = TAVOLI[j];
+        if(t.tipo !== tipo) continue;
+        if(statoLiveTavolo(raw.tavoli[t.id], now) === 'libero'){
+          raw.tavoli[t.id] = { ora: ora, cliente: cliente, inizio: parseDataOra(oggiStr(), ora) };
+          salvaTavoliOggi(raw);
+          return t.id;
+        }
+      }
+    }
+    return null;
+  }
+  function liberaTavolo(id){
+    var raw = leggiTavoliOggi();
+    raw.tavoli[id] = { ora: null, cliente: null, inizio: null };
+    salvaTavoliOggi(raw);
+  }
+  function mostraToast(msg){
+    var el = document.getElementById('toast-tavoli');
+    if(!el) return;
+    el.textContent = msg;
+    el.classList.add('mostra');
+    clearTimeout(el._t);
+    el._t = setTimeout(function(){ el.classList.remove('mostra'); }, 4200);
+    if('Notification' in window && Notification.permission === 'granted'){
+      try{ new Notification('verde salvia 🌿', { body: msg }); }catch(err){}
+    }
+  }
+  var gtNotifiche = document.getElementById('gt-notifiche');
+  if(gtNotifiche){
+    if(!('Notification' in window)){ gtNotifiche.style.display = 'none'; }
+    gtNotifiche.addEventListener('click', function(){
+      Notification.requestPermission().then(function(perm){
+        if(perm === 'granted') mostraToast('Notifiche attivate 🔔');
+      });
+    });
+  }
+  var gtLista = document.getElementById('gt-lista');
+  function renderGestioneTavoli(){
+    if(!gtLista) return;
+    var raw = leggiTavoliOggi();
+    var now = Date.now();
+    gtLista.innerHTML = '';
+    TAVOLI.forEach(function(t){
+      var rec = raw.tavoli[t.id];
+      var stato = statoLiveTavolo(rec, now);
+      var riga = document.createElement('div');
+      riga.className = 'gt-riga';
+      var info = '<b>' + t.id + '</b> · ' + POSTI[t.tipo];
+      if(stato !== 'libero') info += ' · ore ' + rec.ora + (rec.cliente ? ' · ' + rec.cliente : '');
+      riga.innerHTML = '<div class="gt-info">' + info + '</div>'
+        + '<span class="gt-stato ' + stato + '">' + stato + '</span>'
+        + '<button type="button" class="gt-libera"' + (stato === 'libero' ? ' disabled' : '') + '>Libera tavolo</button>';
+      riga.querySelector('.gt-libera').addEventListener('click', function(){
+        liberaTavolo(t.id);
+        mostraToast('Tavolo ' + t.id + ' è ora libero 🌿');
+        renderGestioneTavoli();
+        disegnaPiantinaViva();
+      });
+      gtLista.appendChild(riga);
+    });
+  }
+  function controllaScadenzeTavoli(){
+    var raw = leggiTavoliOggi();
+    var now = Date.now();
+    var attuale = {};
+    TAVOLI.forEach(function(t){ attuale[t.id] = statoLiveTavolo(raw.tavoli[t.id], now); });
+    if(statoPrecedente && document.body.classList.contains('manager')){
+      Object.keys(attuale).forEach(function(id){
+        if(statoPrecedente[id] !== 'libero' && attuale[id] === 'libero'){
+          mostraToast('Tavolo ' + id + ' è ora libero 🌿');
+        }
+      });
+    }
+    statoPrecedente = attuale;
+    disegnaPiantinaViva();
+    if(document.body.classList.contains('manager')) renderGestioneTavoli();
   }
   // ---- piantina dei tavoli ----
   var TAVOLI = [
@@ -306,23 +434,31 @@ if(pInvia){
     el.innerHTML = '<span class="t-id">' + t.id + '</span><span class="t-posti">' + POSTI[t.tipo] + '</span>';
     piantina.appendChild(el);
   });
-  function aggiornaPiantina(giorno){
-    var slot = (giorno[selOra] || {});
-    var chiuso = slot.chiuso === true;
-    var tipoTuo = chiuso ? null : tavoloDisponibile(slot, selPers);
-    var contatori = { t2:0, t3:0, t6:0 };
-    var tuoAssegnato = false;
+  function disegnaPiantinaViva(){
+    // la piantina mostra sempre lo stato reale di oggi (libero/prenotato/occupato),
+    // indipendentemente dal giorno che il cliente sta guardando per prenotare
+    var raw = leggiTavoliOggi();
+    var now = Date.now();
     TAVOLI.forEach(function(t){
       var el = document.getElementById('tav-' + t.id);
-      var indice = contatori[t.tipo]++;
-      var occupato = chiuso || indice < (slot[t.tipo] || 0);
-      el.classList.toggle('occ', occupato);
-      var tuo = !occupato && !tuoAssegnato && t.tipo === tipoTuo && indice === (slot[t.tipo] || 0);
-      if(tuo) tuoAssegnato = true;
-      el.classList.toggle('tuo', tuo);
+      if(!el) return;
+      var stato = statoLiveTavolo(raw.tavoli[t.id], now);
+      el.classList.toggle('occ', stato === 'occupato');
+      el.classList.toggle('prenotato', stato === 'prenotato');
+      el.classList.toggle('tuo', t.id === mioTavoloId && stato !== 'libero');
+      el.title = stato === 'libero' ? 'Libero'
+        : (stato === 'prenotato' ? 'Prenotato per le ' + raw.tavoli[t.id].ora
+          : 'Occupato (prenotato per le ' + raw.tavoli[t.id].ora + ')');
     });
   }
   aggiornaOccupati();
+  controllaScadenzeTavoli();
+  setInterval(controllaScadenzeTavoli, 20000);
+  window.addEventListener('storage', controllaScadenzeTavoli);
+  document.addEventListener('vs:manager-on', function(){
+    renderGestioneTavoli();
+    disegnaPiantinaViva();
+  });
 
   // persone
   var contP = document.getElementById('p-pers');
@@ -339,28 +475,39 @@ if(pInvia){
     aggiornaOccupati();
   });
 
-  pInvia.addEventListener('click', async function(){
+  pInvia.addEventListener('click', function(){
     var nome = document.getElementById('p-nome').value.trim();
     var note = document.getElementById('p-note').value.trim();
     if(!nome){ document.getElementById('p-nome').focus(); return; }
     // prenota davvero un tavolo: se qualcun altro ha appena preso l'ultimo, avvisa
-    var tavolo = await prenotaTavolo(selData, selOra, selPers);
+    var tavolo = prenotaTavolo(selData, selOra, selPers);
     if(!tavolo){
-      await aggiornaOccupati();
+      aggiornaOccupati();
       var confErr = document.getElementById('p-conferma');
       confErr.textContent = 'Ops, per questo orario i tavoli sono appena finiti — scegline un altro 🙏';
       confErr.classList.add('mostra');
       return;
     }
+    // se la prenotazione è per oggi, assegna anche un tavolo specifico
+    // e aggiorna subito la piantina in tempo reale
+    var tavoloVivo = null;
+    if(selData === oggiStr()){
+      tavoloVivo = assegnaTavoloOggi(selOra, selPers, nome);
+      if(tavoloVivo) mioTavoloId = tavoloVivo;
+    }
     var msg = 'Ciao! Vorrei prenotare un tavolo da verde salvia 🌿\n'
       + '• Nome: ' + nome + '\n'
       + '• Data: ' + selData + '\n'
       + '• Ora: ' + selOra + '\n'
-      + '• Persone: ' + selPers + ' (' + NOME_TAVOLO[tavolo] + ')'
+      + '• Persone: ' + selPers + ' (' + (tavoloVivo || NOME_TAVOLO[tavolo]) + ')'
       + (note ? '\n• Note: ' + note : '');
-    await aggiornaOccupati();
+    aggiornaOccupati();
+    disegnaPiantinaViva();
+    if(document.body.classList.contains('manager')) renderGestioneTavoli();
     var conf = document.getElementById('p-conferma');
-    conf.textContent = 'Orario riservato! Si apre WhatsApp con il messaggio pronto — tocca solo Invia 🌿';
+    conf.textContent = tavoloVivo
+      ? 'Tavolo ' + tavoloVivo + ' prenotato per le ' + selOra + ' 🌿 Si apre WhatsApp per confermare — tocca solo Invia!'
+      : 'Orario riservato! Si apre WhatsApp con il messaggio pronto — tocca solo Invia 🌿';
     conf.classList.add('mostra');
     window.open('https://wa.me/390108684171?text=' + encodeURIComponent(msg), '_blank');
   });
@@ -411,6 +558,7 @@ function attivaManager(){
       el.classList.add('editabile');
     });
   });
+  document.dispatchEvent(new Event('vs:manager-on'));
 }
 function disattivaManager(){
   document.body.classList.remove('manager');

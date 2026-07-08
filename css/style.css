@@ -424,6 +424,9 @@ body.manager .pillola.occupata{cursor:pointer;outline:1.5px dashed rgba(192,57,4
 .pl-libero i{background:#FBF7EE;border:1px solid rgba(107,74,47,.3)}
 .pl-occ i{background:repeating-linear-gradient(45deg,#EFE7D6 0 3px,#E0D4BE 3px 6px);border:1px solid rgba(107,74,47,.15)}
 .pl-tuo i{background:#FBF7EE;border:2px solid var(--neon);box-shadow:0 0 8px rgba(47,227,155,.5)}
+.tavolo.prenotato{border:2px dashed var(--ottone);background:rgba(176,141,79,.1);box-shadow:none}
+.tavolo.prenotato .t-id,.tavolo.prenotato .t-posti{color:var(--ottone)}
+.pl-prenotato i{background:rgba(176,141,79,.1);border:2px dashed var(--ottone)}
 @media(max-width:640px){
   .piantina{height:300px}
   .tavolo.t2{width:44px;height:44px}
@@ -451,6 +454,42 @@ body.manager .pillola.occupata{cursor:pointer;outline:1.5px dashed rgba(192,57,4
 @media(max-width:640px){
   .prenota-card{padding:32px 22px 28px}
   .campo-riga{grid-template-columns:1fr}
+}
+
+/* ---------------- GESTIONE TAVOLI (area manager) ---------------- */
+.gestione-tavoli{display:none}
+body.manager .gestione-tavoli{display:block}
+.gt-notifiche{background:none;border:1px solid rgba(107,74,47,.4);color:var(--noce-medio);
+  border-radius:99px;padding:12px 22px;min-height:48px;font-size:.8rem;letter-spacing:.06em;
+  cursor:pointer;margin-bottom:14px;transition:all .3s;font-family:'Jost',sans-serif}
+.gt-notifiche:hover{border-color:var(--noce);color:var(--noce)}
+.gt-lista{display:flex;flex-direction:column;gap:10px}
+.gt-riga{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  background:var(--avorio);border:1px solid rgba(176,141,79,.28);border-radius:14px;padding:12px 16px}
+.gt-info{font-size:.9rem;color:var(--testo)}
+.gt-info b{color:var(--noce);font-weight:500}
+.gt-stato{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:99px;white-space:nowrap}
+.gt-stato.libero{background:rgba(47,227,155,.15);color:#149d68}
+.gt-stato.prenotato{background:rgba(176,141,79,.18);color:var(--ottone)}
+.gt-stato.occupato{background:rgba(62,44,31,.12);color:var(--noce)}
+.gt-libera{background:var(--noce);color:var(--neon);border:none;border-radius:99px;
+  padding:12px 20px;min-height:48px;font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;transition:box-shadow .2s}
+.gt-libera:disabled{opacity:.35;cursor:not-allowed}
+.gt-libera:hover:not(:disabled){box-shadow:0 0 0 4px rgba(47,227,155,.3)}
+@media(max-width:640px){
+  .gt-riga{flex-direction:column;align-items:stretch;text-align:center}
+  .gt-libera{width:100%}
+}
+
+/* toast conferma / notifica tavoli */
+.toast-tavoli{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(16px);
+  background:var(--noce);color:var(--neon);padding:14px 26px;border-radius:99px;font-size:.85rem;
+  letter-spacing:.03em;box-shadow:0 20px 50px -20px rgba(0,0,0,.6);opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;z-index:260;white-space:nowrap;font-family:'Jost',sans-serif}
+.toast-tavoli.mostra{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:640px){
+  .toast-tavoli{font-size:.78rem;padding:12px 18px;bottom:90px;white-space:normal;max-width:86vw;text-align:center}
 }
 
 /* ---------------- AREA MANAGER ---------------- */
