@@ -401,7 +401,7 @@ passInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') tentaLo
 var SEL_EDITABILI = ['.hero-badge','.hero-sub','.hero-dati','.eyebrow','h2','.sotto-titolo',
   '.piatto h3','.piatto .quando','.voce b','.voce span','#chisiamo p','.citazione','.citazione-fonte',
   '.indirizzo','.stelle','.super-big','.super-sub','.super-card h3','.prenota-nota',
-  '.marquee span','.editabile-footer','.login-card h3'];
+  '.marquee span','.editabile-footer','.login-card h3','.recensione-testo','.recensione-nome'];
 
 function attivaManager(){
   document.body.classList.add('manager');
