@@ -396,17 +396,13 @@ h2::after{content:"";position:absolute;left:50%;bottom:-8px;width:0;height:2px;b
 .tavolo.t2{width:56px;height:56px;border-radius:50%}
 .tavolo.t3{width:62px;height:62px;border-radius:16px}
 .tavolo.t6{width:74px;height:74px;border-radius:18px}
-.tavolo.occ{background:repeating-linear-gradient(45deg,#EFE7D6 0 6px,#E4D8C1 6px 12px);
-  border-color:rgba(107,74,47,.15);box-shadow:none}
-.tavolo.occ .t-id,.tavolo.occ .t-posti{color:#B3A08C;text-decoration:line-through}
+.tavolo.occ,.tavolo.prenotato{border:2px dashed var(--ottone);background:rgba(176,141,79,.1);box-shadow:none}
+.tavolo.occ .t-id,.tavolo.occ .t-posti,.tavolo.prenotato .t-id,.tavolo.prenotato .t-posti{color:var(--ottone)}
 .piantina-legenda{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:10px;
   font-size:.78rem;color:var(--noce-medio)}
 .piantina-legenda i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .pl-libero i{background:#FBF7EE;border:1px solid rgba(107,74,47,.3)}
-.pl-occ i{background:repeating-linear-gradient(45deg,#EFE7D6 0 3px,#E0D4BE 3px 6px);border:1px solid rgba(107,74,47,.15)}
-.tavolo.prenotato{border:2px dashed var(--ottone);background:rgba(176,141,79,.1);box-shadow:none}
-.tavolo.prenotato .t-id,.tavolo.prenotato .t-posti{color:var(--ottone)}
-.pl-prenotato i{background:rgba(176,141,79,.1);border:2px dashed var(--ottone)}
+.pl-occ i{background:rgba(176,141,79,.1);border:2px dashed var(--ottone)}
 @media(max-width:640px){
   .piantina{height:300px}
   .tavolo.t2{width:44px;height:44px}
