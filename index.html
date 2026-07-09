@@ -124,28 +124,11 @@
   <div class="centro reveal">
     <div class="eyebrow">riserva il tuo posto</div>
     <h2>Prenota il tavolo</h2>
-    <p class="sotto-titolo">14 tavoli: 9 da due, 2 da tre e 3 da sei persone. Compila e invia: la richiesta arriva su WhatsApp al locale.</p>
+    <p class="sotto-titolo">Guarda in tempo reale i tavoli liberi, poi chiamaci o scrivici su WhatsApp per prenotare.</p>
   </div>
   <div class="prenota-card reveal">
     <div class="campo">
-      <label for="p-nome">nome</label>
-      <input id="p-nome" type="text" placeholder="Il tuo nome" autocomplete="name">
-    </div>
-    <div class="campo">
-      <label>data <span style="color:var(--noce-medio);text-transform:none;letter-spacing:0">(domenica siamo chiusi)</span></label>
-      <div class="giorni" id="p-giorni"></div>
-    </div>
-    <div class="campo">
-      <label>ora</label>
-      <div class="pillole" id="p-ore"></div>
-      <div class="slot-legenda"><span class="l-libero"><i></i>libero</span><span class="l-occ"><i></i>al completo</span></div>
-    </div>
-    <div class="campo">
-      <label>persone</label>
-      <div class="pillole strette" id="p-pers"></div>
-    </div>
-    <div class="campo">
-      <label>la sala <span style="color:var(--noce-medio);text-transform:none;letter-spacing:0">— il tavolo con il bordo verde è il tuo</span></label>
+      <label>la sala</label>
       <div class="piantina" id="piantina">
         <span class="zona z1">Finestre</span>
         <span class="zona z2">Sala centrale</span>
@@ -155,7 +138,6 @@
         <span class="pl-libero"><i></i>libero</span>
         <span class="pl-occ"><i></i>occupato</span>
         <span class="pl-prenotato"><i></i>prenotato</span>
-        <span class="pl-tuo"><i></i>il tuo tavolo</span>
       </div>
     </div>
     <div class="campo gestione-tavoli" id="gestione-tavoli">
@@ -163,14 +145,11 @@
       <button type="button" class="gt-notifiche" id="gt-notifiche">🔔 Attiva notifiche tavoli</button>
       <div class="gt-lista" id="gt-lista"></div>
     </div>
-    <div class="campo">
-      <label for="p-note">note (facoltativo)</label>
-      <textarea id="p-note" placeholder="Es. tavolo vicino alla vetrina, seggiolone, intolleranze..."></textarea>
-    </div>
-    <button class="btn-prenota" id="p-invia">Invia la richiesta su WhatsApp</button>
-    <div class="conferma" id="p-conferma">Si apre WhatsApp con il messaggio già pronto — tocca solo Invia! 🌿</div>
     <div id="toast-tavoli" class="toast-tavoli" aria-live="polite"></div>
-    <p class="prenota-nota">Preferisci parlare con noi? Chiama il <b>+39 010 868 4171</b></p>
+    <div class="campo prenota-azioni">
+      <a class="btn-chiama" href="tel:+390108684171">📞 Chiama ora: +39 010 868 4171</a>
+      <a class="btn-whatsapp" href="https://wa.me/390108684171" target="_blank" rel="noopener">💬 Scrivici su WhatsApp</a>
+    </div>
   </div>
 </section>
 
