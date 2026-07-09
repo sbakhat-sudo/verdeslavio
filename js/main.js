@@ -214,11 +214,10 @@ var piantina = document.getElementById('piantina');
 if(piantina){
   // ---- stato dei tavoli in tempo reale (solo per oggi) ----
   // ogni tavolo può avere al massimo una prenotazione attiva: il proprietario
-  // la segna quando arriva una chiamata/messaggio, il tavolo diventa
-  // "occupato" all'orario indicato e dopo 2 ore torna "libero" da solo
-  // (o subito se il proprietario clicca "Libera tavolo").
+  // la segna quando arriva una chiamata/messaggio. Il tavolo diventa
+  // "occupato" all'orario indicato e resta così finché il proprietario non
+  // clicca "Libera tavolo" — nessuna liberazione automatica.
   var LS_TAVOLI_OGGI = 'vs_tavoli_oggi';
-  var DUE_ORE_MS = 2 * 60 * 60 * 1000;
   var statoPrecedente = null;
 
   function chiaveGiornoOggi(){ return new Date().toDateString(); }
@@ -235,8 +234,7 @@ if(piantina){
   function statoLiveTavolo(rec, now){
     if(!rec || !rec.inizio) return 'libero';
     if(now < rec.inizio) return 'prenotato';
-    if(now < rec.inizio + DUE_ORE_MS) return 'occupato';
-    return 'libero';
+    return 'occupato';
   }
   function leggiTavoliOggi(){
     var raw = null;
@@ -246,15 +244,6 @@ if(piantina){
       raw = { giorno: oggi, tavoli: {} };
       TAVOLI.forEach(function(t){ raw.tavoli[t.id] = { ora: null, cliente: null, inizio: null }; });
     }
-    var now = Date.now(), cambiato = false;
-    Object.keys(raw.tavoli).forEach(function(id){
-      var rec = raw.tavoli[id];
-      if(rec.inizio && now >= rec.inizio + DUE_ORE_MS){
-        raw.tavoli[id] = { ora: null, cliente: null, inizio: null };
-        cambiato = true;
-      }
-    });
-    if(cambiato) salvaTavoliOggi(raw);
     return raw;
   }
   function salvaTavoliOggi(raw){
@@ -325,9 +314,7 @@ if(piantina){
       }else{
         riga.querySelector('.gt-libera').addEventListener('click', function(){
           liberaTavolo(t.id);
-          mostraToast('Tavolo ' + t.id + ' è ora libero 🌿');
-          renderGestioneTavoli();
-          disegnaPiantinaViva();
+          controllaScadenzeTavoli();
         });
       }
       gtLista.appendChild(riga);
@@ -386,9 +373,7 @@ if(piantina){
     if(stato === 'libero'){ occupaTavolo(id); }
     else{
       liberaTavolo(id);
-      mostraToast('Tavolo ' + id + ' è ora libero 🌿');
-      renderGestioneTavoli();
-      disegnaPiantinaViva();
+      controllaScadenzeTavoli();
     }
   });
   function disegnaPiantinaViva(){
