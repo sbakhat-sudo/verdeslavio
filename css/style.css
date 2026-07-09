@@ -447,14 +447,20 @@ body.manager .gestione-tavoli{display:block}
 .gt-stato.libero{background:rgba(47,227,155,.15);color:#149d68}
 .gt-stato.prenotato{background:rgba(176,141,79,.18);color:var(--ottone)}
 .gt-stato.occupato{background:rgba(62,44,31,.12);color:var(--noce)}
-.gt-libera{background:var(--noce);color:var(--neon);border:none;border-radius:99px;
+.gt-azioni{display:flex;gap:8px;flex-wrap:wrap}
+.gt-libera,.gt-occupa{background:var(--noce);color:var(--neon);border:none;border-radius:99px;
   padding:12px 20px;min-height:48px;font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.06em;
   text-transform:uppercase;cursor:pointer;transition:box-shadow .2s}
 .gt-libera:disabled{opacity:.35;cursor:not-allowed}
-.gt-libera:hover:not(:disabled){box-shadow:0 0 0 4px rgba(47,227,155,.3)}
+.gt-libera:hover:not(:disabled),.gt-occupa:hover{box-shadow:0 0 0 4px rgba(47,227,155,.3)}
+.gt-prenota{background:none;border:1px solid rgba(107,74,47,.4);color:var(--noce-medio);border-radius:99px;
+  padding:12px 20px;min-height:48px;font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;transition:all .3s}
+.gt-prenota:hover{border-color:var(--noce);color:var(--noce)}
 @media(max-width:640px){
   .gt-riga{flex-direction:column;align-items:stretch;text-align:center}
-  .gt-libera{width:100%}
+  .gt-libera,.gt-azioni{width:100%}
+  .gt-occupa,.gt-prenota{flex:1}
 }
 
 /* toast conferma / notifica tavoli */
