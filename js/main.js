@@ -250,19 +250,27 @@ if(piantina){
     try{ localStorage.setItem(LS_TAVOLI_OGGI, JSON.stringify(raw)); }
     catch(err){ console.error('localStorage:', err); }
   }
-  // usato dal proprietario: segna un tavolo come occupato/prenotato,
-  // per una telefonata o un messaggio WhatsApp ricevuti fuori dal sito
-  function occupaTavolo(id){
-    var ora = prompt('A che ora? (HH:MM, lascia vuoto per adesso)', orarioOraCorrente());
+  // usati dal proprietario per una telefonata o un messaggio WhatsApp
+  // ricevuti fuori dal sito: due azioni distinte, non un'unica scelta ambigua
+  function occupaOraTavolo(id){
+    var nome = prompt('Nome cliente (facoltativo):');
+    var raw = leggiTavoliOggi();
+    raw.tavoli[id] = { ora: orarioOraCorrente(), cliente: nome || null, inizio: Date.now() };
+    salvaTavoliOggi(raw);
+    mostraToast('Tavolo ' + id + ' segnato occupato 🌿');
+    renderGestioneTavoli();
+    disegnaPiantinaViva();
+  }
+  function prenotaTavoloOra(id){
+    var ora = prompt('A che ora è la prenotazione? (HH:MM)', orarioOraCorrente());
     if(ora === null) return; // annullato
-    ora = ora.trim() || orarioOraCorrente();
+    ora = ora.trim();
     if(!/^\d{1,2}:\d{2}$/.test(ora)) ora = orarioOraCorrente();
     var nome = prompt('Nome cliente (facoltativo):');
-    var inizio = parseOggiOra(ora);
     var raw = leggiTavoliOggi();
-    raw.tavoli[id] = { ora: ora, cliente: nome || null, inizio: inizio };
+    raw.tavoli[id] = { ora: ora, cliente: nome || null, inizio: parseOggiOra(ora) };
     salvaTavoliOggi(raw);
-    mostraToast('Tavolo ' + id + (inizio > Date.now() ? ' prenotato per le ' + ora : ' segnato occupato') + ' 🌿');
+    mostraToast('Tavolo ' + id + ' prenotato per le ' + ora + ' 🌿');
     renderGestioneTavoli();
     disegnaPiantinaViva();
   }
@@ -307,10 +315,12 @@ if(piantina){
       riga.innerHTML = '<div class="gt-info">' + info + '</div>'
         + '<span class="gt-stato ' + stato + '">' + stato + '</span>'
         + (stato === 'libero'
-          ? '<button type="button" class="gt-occupa">Occupa tavolo</button>'
+          ? '<div class="gt-azioni"><button type="button" class="gt-occupa">Occupa tavolo</button>'
+            + '<button type="button" class="gt-prenota">Prenota tavolo</button></div>'
           : '<button type="button" class="gt-libera">Libera tavolo</button>');
       if(stato === 'libero'){
-        riga.querySelector('.gt-occupa').addEventListener('click', function(){ occupaTavolo(t.id); });
+        riga.querySelector('.gt-occupa').addEventListener('click', function(){ occupaOraTavolo(t.id); });
+        riga.querySelector('.gt-prenota').addEventListener('click', function(){ prenotaTavoloOra(t.id); });
       }else{
         riga.querySelector('.gt-libera').addEventListener('click', function(){
           liberaTavolo(t.id);
@@ -370,7 +380,7 @@ if(piantina){
     var id = el.id.replace('tav-', '');
     var raw = leggiTavoliOggi();
     var stato = statoLiveTavolo(raw.tavoli[id], Date.now());
-    if(stato === 'libero'){ occupaTavolo(id); }
+    if(stato === 'libero'){ occupaOraTavolo(id); }
     else{
       liberaTavolo(id);
       controllaScadenzeTavoli();
