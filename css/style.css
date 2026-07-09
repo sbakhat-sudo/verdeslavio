@@ -28,12 +28,23 @@ nav .navlink{color:#EDE3D4;font-size:.82rem;letter-spacing:.18em;text-transform:
 nav .navlink::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--neon);transition:width .3s}
 nav .navlink:hover::after,nav .navlink:focus-visible::after{width:100%}
 nav .navlink:hover,nav .navlink:focus-visible{color:#fff}
+.nav-burger{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;
+  width:38px;height:38px;position:relative;z-index:61}
+.nav-burger span{display:block;width:22px;height:2px;background:#EDE3D4;border-radius:2px;
+  transition:transform .3s ease,opacity .2s ease}
+nav.aperto .nav-burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+nav.aperto .nav-burger span:nth-child(2){opacity:0}
+nav.aperto .nav-burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 @media(max-width:640px){
-  nav{flex-direction:column;gap:8px;padding:12px 5vw;background:rgba(46,32,22,.92);backdrop-filter:blur(12px)}
+  nav{flex-wrap:wrap;gap:8px;padding:14px 5vw;background:rgba(46,32,22,.92);backdrop-filter:blur(12px)}
   nav.scrolled{padding:10px 5vw}
   nav .logo{font-size:1.05rem}
-  nav ul{gap:20px}
-  nav .navlink{font-size:.72rem;letter-spacing:.12em}
+  .nav-burger{display:flex}
+  nav ul{flex-basis:100%;flex-direction:column;align-items:stretch;gap:0;
+    max-height:0;overflow:hidden;transition:max-height .4s ease}
+  nav.aperto ul{max-height:420px}
+  nav ul li{width:100%;text-align:center}
+  nav .navlink{display:block;width:100%;padding:14px 0;font-size:.78rem;letter-spacing:.14em}
 }
 
 /* ---------------- HERO ---------------- */
