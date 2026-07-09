@@ -37,9 +37,6 @@ nav .navlink:hover,nav .navlink:focus-visible{color:#fff}
 nav.aperto .nav-burger{border-color:var(--neon);background:rgba(47,227,155,.08);
   box-shadow:0 0 16px rgba(47,227,155,.3)}
 nav.aperto .nav-burger span{background:var(--neon)}
-nav.aperto .nav-burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
-nav.aperto .nav-burger span:nth-child(2){opacity:0}
-nav.aperto .nav-burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 @media(max-width:640px){
   nav{flex-wrap:wrap;gap:8px;padding:14px 5vw;background:rgba(46,32,22,.92);backdrop-filter:blur(12px)}
   nav.scrolled{padding:10px 5vw}
