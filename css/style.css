@@ -174,6 +174,29 @@ h2{font-family:'Fraunces',serif;font-size:clamp(2.2rem,5.5vw,3.6rem);color:var(-
   .filtro{padding:8px 16px;font-size:.72rem}
 }
 
+/* ---------------- RECENSIONI ---------------- */
+#recensioni{background:var(--crema)}
+.recensioni-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;
+  max-width:1100px;margin:0 auto}
+.recensione-card{background:var(--avorio);border-radius:20px;padding:36px 32px;
+  border:1px solid rgba(176,141,79,.28);box-shadow:0 20px 50px -30px rgba(62,44,31,.4);
+  transition:transform .3s,box-shadow .3s}
+.recensione-card:hover{transform:translateY(-6px);box-shadow:0 30px 60px -30px rgba(62,44,31,.55)}
+.recensione-stelle{color:var(--ottone);letter-spacing:.12em;font-size:1.1rem;margin-bottom:16px}
+.recensione-testo{font-family:'Fraunces',serif;font-style:italic;color:var(--testo);
+  line-height:1.55;font-size:1.02rem;margin-bottom:20px}
+.recensione-nome{font-size:.8rem;color:var(--noce-medio);letter-spacing:.1em;text-transform:uppercase}
+.recensioni-cta{text-align:center;margin-top:44px}
+.btn-recensioni{display:inline-block;background:none;color:var(--noce);text-decoration:none;
+  border:1px solid rgba(107,74,47,.4);padding:13px 30px;border-radius:99px;font-size:.8rem;
+  letter-spacing:.14em;text-transform:uppercase;transition:all .3s}
+.btn-recensioni:hover,.btn-recensioni:focus-visible{border-color:var(--noce);
+  box-shadow:0 0 0 4px rgba(47,227,155,.25)}
+@media(max-width:640px){
+  .recensione-card{padding:28px 24px}
+  .recensioni-grid{gap:18px}
+}
+
 /* ---------------- CONTATTI ---------------- */
 #contatti{background:var(--crema)}
 .mappa-card{max-width:1080px;margin:0 auto;border-radius:24px;overflow:hidden;
@@ -336,37 +359,6 @@ h2::after{content:"";position:absolute;left:50%;bottom:-8px;width:0;height:2px;b
 .campo{margin-bottom:20px}
 .campo label{display:block;font-family:'Comfortaa',cursive;font-size:.78rem;letter-spacing:.2em;
   text-transform:lowercase;color:#149d68;margin-bottom:8px}
-.campo input,.campo select,.campo textarea{width:100%;background:var(--crema);border:1px solid rgba(107,74,47,.3);
-  border-radius:12px;padding:14px 16px;font-family:'Jost',sans-serif;font-size:1rem;color:var(--testo);
-  transition:border-color .3s,box-shadow .3s;-webkit-appearance:none;appearance:none}
-.campo textarea{resize:vertical;min-height:80px}
-.campo input:focus,.campo select:focus,.campo textarea:focus{outline:none;border-color:var(--neon);
-  box-shadow:0 0 0 3px rgba(47,227,155,.25)}
-.campo-riga{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-/* selettori a pillole */
-.giorni{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin;
-  scrollbar-color:rgba(176,141,79,.5) transparent}
-.giorno{flex:0 0 auto;min-width:72px;text-align:center;background:var(--crema);cursor:pointer;
-  border:1px solid rgba(107,74,47,.3);border-radius:14px;padding:10px 12px;transition:all .25s;user-select:none}
-.giorno .g-sett{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--noce-medio)}
-.giorno .g-num{font-family:'Fraunces',serif;font-size:1.4rem;color:var(--noce);line-height:1.2}
-.giorno .g-mese{font-size:.72rem;color:var(--noce-medio)}
-.giorno:hover{border-color:var(--noce)}
-.giorno.sel{background:var(--noce);border-color:var(--noce);box-shadow:0 0 18px rgba(47,227,155,.35)}
-.giorno.sel .g-sett,.giorno.sel .g-mese{color:#BCA88F}
-.giorno.sel .g-num{color:var(--neon);text-shadow:0 0 10px rgba(47,227,155,.6)}
-.pillole{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
-.pillole.strette{grid-template-columns:repeat(auto-fill,minmax(52px,1fr))}
-.pillola{background:var(--crema);border:1px solid rgba(107,74,47,.3);border-radius:99px;
-  padding:9px 6px;text-align:center;font-size:.92rem;color:var(--testo);cursor:pointer;
-  transition:all .25s;user-select:none}
-.pillola:hover{border-color:var(--noce)}
-.pillola.sel{background:var(--noce);border-color:var(--noce);color:var(--neon);
-  box-shadow:0 0 16px rgba(47,227,155,.35);font-weight:500}
-.pillola.occupata{color:#b3a08c;text-decoration:line-through;cursor:not-allowed;
-  background:repeating-linear-gradient(45deg,var(--crema) 0 6px,#EAE0CE 6px 12px);
-  border-color:rgba(107,74,47,.18)}
-body.manager .pillola.occupata{cursor:pointer;outline:1.5px dashed rgba(192,57,43,.5);outline-offset:2px}
 /* piantina dei tavoli */
 .piantina{position:relative;height:360px;margin-top:6px;border-radius:16px;overflow:hidden;
   border:1px solid rgba(176,141,79,.3);
@@ -389,18 +381,14 @@ body.manager .pillola.occupata{cursor:pointer;outline:1.5px dashed rgba(192,57,4
 .tavolo.occ{background:repeating-linear-gradient(45deg,#EFE7D6 0 6px,#E4D8C1 6px 12px);
   border-color:rgba(107,74,47,.15);box-shadow:none}
 .tavolo.occ .t-id,.tavolo.occ .t-posti{color:#B3A08C;text-decoration:line-through}
-.tavolo.tuo{border-color:var(--neon);border-width:2px;
-  box-shadow:0 0 0 4px rgba(47,227,155,.2),0 0 24px rgba(47,227,155,.45);
-  animation:tuoPulsa 2s ease-in-out infinite}
-.tavolo.tuo .t-id{color:#149d68}
-@keyframes tuoPulsa{0%,100%{box-shadow:0 0 0 4px rgba(47,227,155,.18),0 0 18px rgba(47,227,155,.35)}
-  50%{box-shadow:0 0 0 6px rgba(47,227,155,.3),0 0 34px rgba(47,227,155,.6)}}
 .piantina-legenda{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:10px;
   font-size:.78rem;color:var(--noce-medio)}
 .piantina-legenda i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .pl-libero i{background:#FBF7EE;border:1px solid rgba(107,74,47,.3)}
 .pl-occ i{background:repeating-linear-gradient(45deg,#EFE7D6 0 3px,#E0D4BE 3px 6px);border:1px solid rgba(107,74,47,.15)}
-.pl-tuo i{background:#FBF7EE;border:2px solid var(--neon);box-shadow:0 0 8px rgba(47,227,155,.5)}
+.tavolo.prenotato{border:2px dashed var(--ottone);background:rgba(176,141,79,.1);box-shadow:none}
+.tavolo.prenotato .t-id,.tavolo.prenotato .t-posti{color:var(--ottone)}
+.pl-prenotato i{background:rgba(176,141,79,.1);border:2px dashed var(--ottone)}
 @media(max-width:640px){
   .piantina{height:300px}
   .tavolo.t2{width:44px;height:44px}
@@ -410,24 +398,55 @@ body.manager .pillola.occupata{cursor:pointer;outline:1.5px dashed rgba(192,57,4
   .tavolo .t-posti{font-size:.6rem}
   .zona{font-size:.58rem;letter-spacing:.18em}
 }
-.slot-legenda{display:flex;gap:18px;justify-content:center;margin-top:10px;font-size:.78rem;color:var(--noce-medio)}
-.slot-legenda i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px}
-.slot-legenda .l-libero i{background:var(--crema);border:1px solid rgba(107,74,47,.3)}
-.slot-legenda .l-occ i{background:repeating-linear-gradient(45deg,var(--crema) 0 3px,#E0D4BE 3px 6px);border:1px solid rgba(107,74,47,.18)}
-.btn-prenota{width:100%;background:var(--noce);color:#eafff5;border:none;cursor:pointer;
-  padding:17px 20px;border-radius:99px;font-family:'Jost',sans-serif;font-size:.9rem;font-weight:500;
-  letter-spacing:.14em;text-transform:uppercase;margin-top:6px;
+.prenota-azioni{display:flex;gap:14px;flex-wrap:wrap}
+.prenota-azioni a{flex:1;min-width:220px;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;
+  text-decoration:none;border:none;cursor:pointer;padding:17px 20px;border-radius:99px;
+  font-family:'Jost',sans-serif;font-size:.9rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
   transition:box-shadow .3s,transform .2s,background .3s}
-.btn-prenota:hover,.btn-prenota:focus-visible{background:#149d68;transform:translateY(-2px);
+.btn-chiama{background:var(--noce);color:#eafff5}
+.btn-chiama:hover,.btn-chiama:focus-visible{background:#149d68;transform:translateY(-2px);
   box-shadow:0 0 34px rgba(47,227,155,.5)}
-.prenota-nota{text-align:center;color:var(--noce-medio);font-size:.9rem;margin-top:16px}
-.prenota-nota b{color:var(--noce);font-weight:500}
-.conferma{display:none;text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:1.05rem;
-  color:#149d68;margin-top:14px}
-.conferma.mostra{display:block;animation:salita .5s ease both}
+.btn-whatsapp{background:var(--neon);color:#0E2A1E}
+.btn-whatsapp:hover,.btn-whatsapp:focus-visible{transform:translateY(-2px);box-shadow:0 0 34px rgba(47,227,155,.5)}
 @media(max-width:640px){
   .prenota-card{padding:32px 22px 28px}
-  .campo-riga{grid-template-columns:1fr}
+  .prenota-azioni{flex-direction:column}
+}
+
+/* ---------------- GESTIONE TAVOLI (area manager) ---------------- */
+.gestione-tavoli{display:none}
+body.manager .gestione-tavoli{display:block}
+.gt-notifiche{background:none;border:1px solid rgba(107,74,47,.4);color:var(--noce-medio);
+  border-radius:99px;padding:12px 22px;min-height:48px;font-size:.8rem;letter-spacing:.06em;
+  cursor:pointer;margin-bottom:14px;transition:all .3s;font-family:'Jost',sans-serif}
+.gt-notifiche:hover{border-color:var(--noce);color:var(--noce)}
+.gt-lista{display:flex;flex-direction:column;gap:10px}
+.gt-riga{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  background:var(--avorio);border:1px solid rgba(176,141,79,.28);border-radius:14px;padding:12px 16px}
+.gt-info{font-size:.9rem;color:var(--testo)}
+.gt-info b{color:var(--noce);font-weight:500}
+.gt-stato{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:99px;white-space:nowrap}
+.gt-stato.libero{background:rgba(47,227,155,.15);color:#149d68}
+.gt-stato.prenotato{background:rgba(176,141,79,.18);color:var(--ottone)}
+.gt-stato.occupato{background:rgba(62,44,31,.12);color:var(--noce)}
+.gt-libera{background:var(--noce);color:var(--neon);border:none;border-radius:99px;
+  padding:12px 20px;min-height:48px;font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.06em;
+  text-transform:uppercase;cursor:pointer;transition:box-shadow .2s}
+.gt-libera:disabled{opacity:.35;cursor:not-allowed}
+.gt-libera:hover:not(:disabled){box-shadow:0 0 0 4px rgba(47,227,155,.3)}
+@media(max-width:640px){
+  .gt-riga{flex-direction:column;align-items:stretch;text-align:center}
+  .gt-libera{width:100%}
+}
+
+/* toast conferma / notifica tavoli */
+.toast-tavoli{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(16px);
+  background:var(--noce);color:var(--neon);padding:14px 26px;border-radius:99px;font-size:.85rem;
+  letter-spacing:.03em;box-shadow:0 20px 50px -20px rgba(0,0,0,.6);opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;z-index:260;white-space:nowrap;font-family:'Jost',sans-serif}
+.toast-tavoli.mostra{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:640px){
+  .toast-tavoli{font-size:.78rem;padding:12px 18px;bottom:90px;white-space:normal;max-width:86vw;text-align:center}
 }
 
 /* ---------------- AREA MANAGER ---------------- */
