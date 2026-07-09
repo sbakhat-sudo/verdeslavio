@@ -7,6 +7,20 @@ document.querySelectorAll('[data-goto]').forEach(function(btn){
 });
 // navbar che si compatta allo scroll
 var nav = document.getElementById('navbar');
+// menu hamburger (mobile): apre/chiude i link della navbar
+var navBurger = document.getElementById('nav-burger');
+if(navBurger){
+  navBurger.addEventListener('click', function(){
+    var aperto = nav.classList.toggle('aperto');
+    navBurger.setAttribute('aria-expanded', aperto ? 'true' : 'false');
+  });
+  document.querySelectorAll('#nav-links .navlink').forEach(function(link){
+    link.addEventListener('click', function(){
+      nav.classList.remove('aperto');
+      navBurger.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
 var scroller = document.scrollingElement || document.documentElement;
 function aggiornaNav(){ nav.classList.toggle('scrolled', (window.scrollY||scroller.scrollTop) > 40); }
 window.addEventListener('scroll', aggiornaNav, {passive:true});
