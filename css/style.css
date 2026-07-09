@@ -29,12 +29,17 @@ nav .navlink::after{content:"";position:absolute;left:0;bottom:0;width:0;height:
 nav .navlink:hover::after,nav .navlink:focus-visible::after{width:100%}
 nav .navlink:hover,nav .navlink:focus-visible{color:#fff}
 .nav-burger{display:none;flex-direction:column;justify-content:center;align-items:center;gap:5px;
-  width:38px;height:38px;position:relative;z-index:61}
-.nav-burger span{display:block;width:22px;height:2px;background:#EDE3D4;border-radius:2px;
-  transition:transform .3s ease,opacity .2s ease}
-nav.aperto .nav-burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  width:42px;height:42px;border-radius:50%;border:1px solid rgba(237,227,212,.3);
+  background:rgba(255,255,255,.03);position:relative;z-index:61;transition:border-color .3s,box-shadow .3s,background .3s}
+.nav-burger:hover,.nav-burger:focus-visible{border-color:var(--neon);box-shadow:0 0 16px rgba(47,227,155,.35)}
+.nav-burger span{display:block;width:17px;height:1.5px;background:#EDE3D4;border-radius:2px;
+  transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .2s ease,background .3s}
+nav.aperto .nav-burger{border-color:var(--neon);background:rgba(47,227,155,.08);
+  box-shadow:0 0 16px rgba(47,227,155,.3)}
+nav.aperto .nav-burger span{background:var(--neon)}
+nav.aperto .nav-burger span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
 nav.aperto .nav-burger span:nth-child(2){opacity:0}
-nav.aperto .nav-burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+nav.aperto .nav-burger span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 @media(max-width:640px){
   nav{flex-wrap:wrap;gap:8px;padding:14px 5vw;background:rgba(46,32,22,.92);backdrop-filter:blur(12px)}
   nav.scrolled{padding:10px 5vw}
@@ -43,7 +48,14 @@ nav.aperto .nav-burger span:nth-child(3){transform:translateY(-7px) rotate(-45de
   nav ul{flex-basis:100%;flex-direction:column;align-items:stretch;gap:0;
     max-height:0;overflow:hidden;transition:max-height .4s ease}
   nav.aperto ul{max-height:420px}
-  nav ul li{width:100%;text-align:center}
+  nav ul li{width:100%;text-align:center;opacity:0;transform:translateY(-6px);
+    transition:opacity .3s ease,transform .3s ease}
+  nav.aperto ul li{opacity:1;transform:none}
+  nav.aperto ul li:nth-child(2){transition-delay:.04s}
+  nav.aperto ul li:nth-child(3){transition-delay:.08s}
+  nav.aperto ul li:nth-child(4){transition-delay:.12s}
+  nav.aperto ul li:nth-child(5){transition-delay:.16s}
+  nav.aperto ul li:nth-child(6){transition-delay:.2s}
   nav .navlink{display:block;width:100%;padding:14px 0;font-size:.78rem;letter-spacing:.14em}
 }
 
