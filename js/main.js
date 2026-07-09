@@ -100,10 +100,13 @@ if(!ridotto && window.matchMedia('(hover:hover)').matches){
 var lb = document.getElementById('lightbox');
 var lbImg = lb.querySelector('img');
 var lbNome = lb.querySelector('.lb-nome');
-var items = Array.prototype.slice.call(document.querySelectorAll('.g-item'));
+var items = [];
+function aggiornaGalleryItems(){ items = Array.prototype.slice.call(document.querySelectorAll('.g-item')); }
+aggiornaGalleryItems();
 var corrente = 0;
 function visibili(){ return items.filter(function(it){ return !it.classList.contains('nascosto'); }); }
 function apriLB(i){
+  aggiornaGalleryItems();
   corrente = (i + items.length) % items.length;
   if(items[corrente].classList.contains('nascosto')){
     var vis = visibili();
@@ -120,7 +123,58 @@ function chiudiLB(){
   lb.classList.remove('aperto');
   document.body.style.overflow = '';
 }
-items.forEach(function(it, i){ it.addEventListener('click', function(){ apriLB(i); }); });
+var galleryGrid = document.querySelector('.gallery-grid');
+galleryGrid.addEventListener('click', function(e){
+  var cambiaBtn = e.target.closest('.g-cambia');
+  var eliminaBtn = e.target.closest('.g-elimina');
+  if(cambiaBtn){
+    e.preventDefault(); e.stopPropagation();
+    imgTarget = cambiaBtn.closest('.g-item').querySelector('img');
+    imgInput.click();
+    return;
+  }
+  if(eliminaBtn){
+    e.preventDefault(); e.stopPropagation();
+    if(confirm('Sei sicuro di voler eliminare questa foto?')){
+      eliminaBtn.closest('.g-item').remove();
+      aggiornaGalleryItems();
+    }
+    return;
+  }
+  if(document.body.classList.contains('manager')) return;
+  var it = e.target.closest('.g-item'); if(!it) return;
+  aggiornaGalleryItems();
+  apriLB(items.indexOf(it));
+});
+// aggiunta di una nuova foto in galleria
+var gAggiungi = document.getElementById('g-aggiungi');
+var gNuovaInput = document.getElementById('g-nuova-input');
+if(gAggiungi){
+  gAggiungi.addEventListener('click', function(){ gNuovaInput.click(); });
+  gNuovaInput.addEventListener('change', function(){
+    var file = gNuovaInput.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      var nome = prompt('Didascalia della foto (facoltativo):') || '';
+      var el = document.createElement('div');
+      el.className = 'g-item';
+      el.setAttribute('data-cat', 'tutti');
+      el.setAttribute('data-nome', nome);
+      var img = document.createElement('img');
+      img.src = reader.result; img.alt = nome;
+      var manager = document.createElement('div');
+      manager.className = 'g-manager';
+      manager.innerHTML = '<button type="button" class="g-cambia" aria-label="Cambia foto">✏️</button>'
+        + '<button type="button" class="g-elimina" aria-label="Elimina foto">🗑️</button>';
+      el.appendChild(img); el.appendChild(manager);
+      galleryGrid.appendChild(el);
+      aggiornaGalleryItems();
+    };
+    reader.readAsDataURL(file);
+    gNuovaInput.value = '';
+  });
+}
 
 // filtri gallery
 var filtri = document.querySelectorAll('.filtro');
@@ -391,9 +445,33 @@ function tentaLogin(){
 document.getElementById('login-entra').addEventListener('click', tentaLogin);
 passInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') tentaLogin(); });
 
+// modifica rapida dei prezzi del menu (icona ✏️ accanto a ogni prezzo)
+var prezzoOverlay = document.getElementById('prezzo-overlay');
+var prezzoInput = document.getElementById('prezzo-input');
+var prezzoTarget = null;
+function chiudiPrezzo(){ prezzoOverlay.classList.remove('aperto'); prezzoTarget = null; }
+var menuSection = document.getElementById('menu');
+if(menuSection){
+  menuSection.addEventListener('click', function(e){
+    var btn = e.target.closest('.prezzo-edit'); if(!btn) return;
+    prezzoTarget = btn.previousElementSibling;
+    prezzoInput.value = prezzoTarget.textContent.trim();
+    prezzoOverlay.classList.add('aperto');
+    setTimeout(function(){ prezzoInput.focus(); prezzoInput.select(); }, 100);
+  });
+}
+document.getElementById('prezzo-salva').addEventListener('click', function(){
+  var valore = prezzoInput.value.trim();
+  if(prezzoTarget && valore){ prezzoTarget.textContent = valore; }
+  chiudiPrezzo();
+});
+document.getElementById('prezzo-annulla').addEventListener('click', chiudiPrezzo);
+prezzoOverlay.addEventListener('click', function(e){ if(e.target === prezzoOverlay) chiudiPrezzo(); });
+prezzoInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') document.getElementById('prezzo-salva').click(); });
+
 // elementi modificabili in modalità manager
 var SEL_EDITABILI = ['.hero-badge','.hero-sub','.hero-dati','.eyebrow','h2','.sotto-titolo',
-  '.piatto h3','.piatto .quando','.voce b','.voce span','#chisiamo p','.citazione','.citazione-fonte',
+  '.piatto h3','.piatto .quando','.voce b','#chisiamo p','.citazione','.citazione-fonte',
   '.indirizzo','.stelle','.super-big','.super-sub','.super-card h3',
   '.marquee span','.editabile-footer','.login-card h3','.recensione-testo','.recensione-nome'];
 
