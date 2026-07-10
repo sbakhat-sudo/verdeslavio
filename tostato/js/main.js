@@ -1,3 +1,25 @@
+// Scroll progress bar + nav shrink
+const progress = document.getElementById('progress');
+const navbar = document.getElementById('navbar');
+let ticking = false;
+
+function onScroll() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progress.style.width = pct + '%';
+  navbar.classList.toggle('scrolled', scrollTop > 40);
+  ticking = false;
+}
+
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(onScroll);
+    ticking = true;
+  }
+}, { passive: true });
+onScroll();
+
 // Mobile nav toggle
 const burger = document.getElementById('nav-burger');
 const navLinks = document.getElementById('nav-links');
